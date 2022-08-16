@@ -1,36 +1,44 @@
 #!/usr/bin/python
 import sys
 import os
-import subprocess as sp
-from os.path import expanduser
+from pathlib import Path
 
-user = sys.argv[1]
-home_path = expanduser("~%s" % user)
+# user = sys.argv[1]
+user = os.environ['USER']
+HOME_PATH = Path.home().as_posix()
+APP_PATH = os.path.dirname(os.path.realpath(__file__))
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+print(APP_PATH)
+desktop_file_lines = ['[Desktop Entry]',
+                      'Name=CommanderPi'
+                      'Comment=System info and overclocking',
+                      f'Exec={APP_PATH}/src/start.sh',
+                      f'Icon={APP_PATH}/src/icons/Icon.png',
+                      'Categories=Utility;',
+                      'Version=1.0',
+                      'Type=Application',
+                      'Terminal=false',
+                      'StartupNotify=true']
 
-print(dir_path)
-f_content = "[Desktop Entry]\nName=CommanderPi\nComment=System info and overclocking\nExec="+dir_path+"/src/start.sh\nIcon="+dir_path+"/src/icons/Icon.png\nCategories=Utility;\nVersion=1.0\nType=Application\nTerminal=false\nStartupNotify=true"
-print(f_content)
+for line in desktop_file_lines:
+    print(line)
 
-d_dir = home_path+"/Desktop/commanderpi.desktop"
-x_dir = "/usr/share/applications/commanderpi.desktop"
+DESKTOP_PATH = f'{HOME_PATH}/Desktop/commanderpi.desktop'
+MENU_PATH = '/usr/share/applications/commanderpi.desktop'
 
-print("Save desktop shortcut to %s" % d_dir)
+print(f'Save desktop shortcut to {DESKTOP_PATH}')
 try:
-    f = open(d_dir, "w")
+    with open(DESKTOP_PATH, mode='w') as fp:
+        for line in desktop_file_lines:
+            print(line, file=fp)
 except FileNotFoundError:
-    print("Couldn't create desktop shortcut!")
-else:
-    with f:
-        f.write(f_content)
+    print('Couldn\'t create desktop shortcut!')
 
 
-print("Save menu shortcut to %s" % x_dir)
+print(f'Save menu shortcut to {MENU_PATH}')
 try:
-    f2 = open(x_dir, "w")
+    with open(MENU_PATH, mode='w') as fp:
+        for line in desktop_file_lines:
+            print(line, file=fp)
 except FileNotFoundError:
-    print("Couldn't create menu shortcut!")
-else:
-    with f2:
-        f2.write(f_content)
+    print('Couldn\'t create menu shortcut!')
